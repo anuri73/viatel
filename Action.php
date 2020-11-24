@@ -10,6 +10,7 @@ class Action {
 	public function init_actions() {
 		add_action( 'admin_menu', [ $this, 'add_tools_menu' ] );
 		add_action( 'wp_ajax_viatel_save_profile', [ $this, 'ajax_save_profile' ] );
+		add_action( 'admin_notices', 'viatel_notice' );
 	}
 
 	public function add_tools_menu() {

@@ -29,7 +29,7 @@ class ShortCode {
 			$attrs
 		);
 
-		$this->validate_required_attributes( $attrs );
+		$this->validate_required_attributes( $attributes );
 
 		$attrs = array_change_key_case( (array) $attrs, CASE_LOWER );
 
@@ -57,6 +57,7 @@ class ShortCode {
 
 	public function init() {
 		add_shortcode( 'viatel', [ $this, 'render_shortcode' ] );
+		add_action( 'pre_post_update', [ $this, 'validate_post_short_code_attributes' ], 10, 2 );
 	}
 
 	private function create_order( Viatel_Widget $viatel_widget ) {
@@ -133,7 +134,14 @@ class ShortCode {
 	}
 
 	private function validate_required_attributes( array $attrs ) {
-
+		$attrs          = array_merge( array_fill_keys( $this->get_mandatory_attributes(), null ), $attrs );
+		$required_attrs = array_diff( $attrs, array_filter( $attrs ) );
+		if ( count( $required_attrs ) ) {
+			throw new LogicException( sprintf(
+				"Viatel attributes '%s' are mandatory",
+				implode( ', ', array_keys( $required_attrs ) )
+			) );
+		}
 	}
 
 	public function get_mandatory_attributes() {
@@ -144,5 +152,31 @@ class ShortCode {
 			'locale',
 			'env',
 		];
+	}
+
+	public function validate_post_short_code_attributes( $post_id, $post_data ) {
+
+		# If this is just a revision, don't do anything.
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+		preg_match_all( '/(\[viatel\s([\S\s]+?)])/', $post_data['post_content'], $matches );
+
+		if ( array_key_exists( 2, $matches ) ) {
+			$attrs = shortcode_parse_atts( $matches[2][0] );
+			try {
+				$this->validate_required_attributes( $attrs );
+			} catch ( LogicException $exception ) {
+				# Add a notification
+				update_option(
+					'viatel_notifications',
+					json_encode( [ 'error', $exception->getMessage() ] )
+				);
+				# And redirect
+				if ( wp_safe_redirect( get_edit_post_link( $post_id, 'redirect' ) ) ) {
+					exit;
+				}
+			}
+		}
 	}
 }
