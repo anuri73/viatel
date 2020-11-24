@@ -1,0 +1,53 @@
+.debug {
+  border: 1px dashed red;
+}
+
+#viatel-container {
+  $font-size-base: 1.5rem;
+  $rhino: #333366 !default;
+  $colors: (
+          rhino: $rhino
+  );
+  @import "~bootstrap/scss/functions";
+  @import "~bootstrap/scss/variables";
+  @import "~bootstrap/scss/mixins";
+  @import "~bootstrap/scss/utilities";
+  @import "~bootstrap/scss/vendor/rfs";
+  @import "~bootstrap/scss/root";
+  @import "~bootstrap/scss/forms";
+  @import "~bootstrap/scss/buttons";
+  @import "~bootstrap/scss/nav";
+  @import "~bootstrap/scss/bootstrap-grid";
+  @import "~bootstrap/scss/custom-forms";
+  @import "~bootstrap/scss/alert";
+
+  width: 920px;
+  max-width: initial;
+
+  .form-check-input {
+    position: relative;
+  }
+
+  @each $color, $value in $colors {
+    .btn-#{$color} {
+      @include button-variant($value, $value);
+    }
+  }
+
+  .vt-button {
+    border-radius: 1rem;
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+}
+

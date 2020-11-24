@@ -1,0 +1,51 @@
+$font-size-base: 1.2rem;
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/vendor/rfs";
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/nav";
+@import "~bootstrap/scss/bootstrap-grid";
+@import "~bootstrap/scss/custom-forms";
+@import "~bootstrap/scss/alert";
+
+.viatel {
+
+  input[type="checkbox"], input[type="radio"] {
+    margin-top: $form-check-input-margin-y !important;
+    margin-left: -$form-check-input-gutter !important;
+  }
+
+  header h1 {
+    display: inline;
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .tab-content {
+    padding: 1rem 0;
+  }
+
+  .custom-control-label {
+    &::before {
+      top: 0.1rem;
+    }
+
+    &::after {
+      top: 0.23rem;
+    }
+  }
+}
