@@ -30,7 +30,7 @@ wp_localize_script(
         <div class="col-12 col-md-8">
             <div class="row">
                 <div class="col-12 col-md-9 d-flex justify-content-left align-items-center flex-wrap">
-                    <h3>
+                    <h3 class="font-weight-normal">
 						<?= esc_html( $this->viatel->config->get_plugin_title() ); ?>
                     </h3>
                 </div>
