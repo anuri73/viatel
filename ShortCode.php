@@ -13,27 +13,24 @@ class ShortCode {
 
 		$attributes = shortcode_atts(
 			[
-				'customer_name_label'    => null,
-				'customer_email_label'   => null,
-				'customer_phone_label'   => null,
-				'account_number_label'   => null,
-				'top_up_label'           => null,
-				'automatic_top_up_label' => null,
-				'package_label'          => null,
-				'package_count'          => null,
-				'packages'               => null,
-				'currency'               => null,
-				'locale'                 => null,
-				'env'                    => null,
+				'name_label'                     => null,
+				'email_label'                    => null,
+				'phone_label'                    => null,
+				'account_number_label'           => null,
+				'approve_top_up_label'           => null,
+				'approve_automatic_top_up_label' => null,
+				'packages_label'                 => null,
+				'packages'                       => null,
+				'currency'                       => null,
+				'locale'                         => null,
+				'env'                            => null,
 			],
 			$attrs
 		);
 
-		$this->validate_required_attributes( $attributes );
+		$attributes = array_change_key_case( $attributes, CASE_LOWER );
 
-		$attrs = array_change_key_case( (array) $attrs, CASE_LOWER );
-
-		$widget = Viatel_Widget::get_instance( $attrs );
+		$widget = Viatel_Widget::get_instance( $attributes );
 
 		if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			$response = $this->create_order( $widget );
@@ -86,15 +83,16 @@ class ShortCode {
 	private function make_create_order_request( Viatel_Widget $viatel_widget ) {
 		$nonce                = time();
 		$viatel_widget->nonce = $nonce;
+		$package              = $viatel_widget->get_selected_package();
 		$verification         = implode( '&', [
 			(int) $viatel_widget->merchant_id,
 			(string) $viatel_widget->account_number,
-			(int) $viatel_widget->amount,
-			(int) $viatel_widget->value,
+			(int) $package->amount,
+			(int) $package->value,
 			(string) $viatel_widget->currency,
 			$viatel_widget->approve_top_up ? 'true' : 'false',
 			$viatel_widget->approve_automatic_top_up ? 'true' : 'false',
-			(string) $viatel_widget->successUrl,
+			(string) $viatel_widget->success_url,
 			(string) $viatel_widget->cancel_url,
 			(string) $viatel_widget->nonce,
 			(string) $viatel_widget->api_key,
@@ -103,23 +101,23 @@ class ShortCode {
 			"MerchantId"            => (int) $viatel_widget->merchant_id,
 			"OrderNumber"           => ! empty( $viatel_widget->order_number ) ? (string) $viatel_widget->order_number : null,
 			"AccountNumber"         => ! empty( $viatel_widget->account_number ) ? (string) $viatel_widget->account_number : null,
-			"Amount"                => (int) $viatel_widget->amount,
-			"Value"                 => (int) $viatel_widget->value,
+			"Amount"                => (int) $package->amount,
+			"Value"                 => (int) $package->value,
 			"Currency"              => (string) $viatel_widget->currency,
 			"Locale"                => (string) $viatel_widget->locale,
-			"OrderText"             => (string) $viatel_widget->order_text,
+			"OrderText"             => (string) $package->order_text,
 			"CancelUrl"             => ! empty( $viatel_widget->cancel_url ) ? (string) $viatel_widget->cancel_url : null,
-			"SuccessUrl"            => (string) $viatel_widget->successUrl,
+			"SuccessUrl"            => (string) $viatel_widget->success_url,
 			"Verification"          => base64_encode( hash( 'sha256', $verification, true ) ),
 			"Nonce"                 => $nonce,
 			"Name"                  => ! empty( $viatel_widget->name ) ? (string) $viatel_widget->name : null,
 			"Email"                 => ! empty( $viatel_widget->email ) ? (string) $viatel_widget->email : null,
-			"PhoneNumber"           => ! empty( $viatel_widget->phone_number ) ? (string) $viatel_widget->phone_number : null,
+			"PhoneNumber"           => ! empty( $viatel_widget->phone ) ? (string) $viatel_widget->phone : null,
 			"ApproveTopUp"          => $viatel_widget->approve_top_up,
 			"ApproveAutomaticTopUp" => $viatel_widget->approve_automatic_top_up,
-			"Extra"                 => ! empty( $viatel_widget->extra ) ? (string) $viatel_widget->extra : null,
+			"Extra"                 => ! empty( $package->extra ) ? (string) $package->extra : null,
 			"VATAmountIncluded"     => $viatel_widget->vat_amount_included,
-			"ConfirmationPage"      => $viatel_widget->confirmation_page,
+			"ConfirmationPage"      => $viatel_widget->show_confirmation_page === '1' ? "true" : "false",
 		] );
 
 		return wp_remote_post( $this->viatel->config->get_create_order_url( $viatel_widget->env ),
@@ -133,24 +131,19 @@ class ShortCode {
 		);
 	}
 
-	private function validate_required_attributes( array $attrs ) {
-		$attrs          = array_merge( array_fill_keys( $this->get_mandatory_attributes(), null ), $attrs );
-		$required_attrs = array_diff( $attrs, array_filter( $attrs ) );
-		if ( count( $required_attrs ) ) {
-			throw new LogicException( sprintf(
-				"Viatel attributes '%s' are mandatory",
-				implode( ', ', array_keys( $required_attrs ) )
-			) );
-		}
-	}
-
 	public function get_mandatory_attributes() {
 		return [
-			'package_count',
 			'packages',
 			'currency',
 			'locale',
 			'env',
+		];
+	}
+
+	public function get_mandatory_package_attributes() {
+		return [
+			'amount',
+			'main_text',
 		];
 	}
 
@@ -160,12 +153,13 @@ class ShortCode {
 		if ( wp_is_post_revision( $post_id ) ) {
 			return;
 		}
-		preg_match_all( '/(\[viatel\s([\S\s]+?)])/', $post_data['post_content'], $matches );
+		preg_match_all( '/(\[viatel\s([\S\s]+(?R)?)])/', $post_data['post_content'], $matches );
 
 		if ( array_key_exists( 2, $matches ) ) {
 			$attrs = shortcode_parse_atts( $matches[2][0] );
 			try {
 				$this->validate_required_attributes( $attrs );
+				$this->validate_packages( $attrs['packages'] );
 			} catch ( LogicException $exception ) {
 				# Add a notification
 				update_option(
@@ -177,6 +171,36 @@ class ShortCode {
 					exit;
 				}
 			}
+		}
+	}
+
+	private function validate_required_attributes( array $attrs ) {
+		$attrs          = array_merge( array_fill_keys( $this->get_mandatory_attributes(), null ), $attrs );
+		$required_attrs = array_diff( $attrs, array_filter( $attrs ) );
+		if ( count( $required_attrs ) ) {
+			throw new LogicException( sprintf(
+				"Viatel attributes '%s' are mandatory",
+				implode( ', ', array_keys( $required_attrs ) )
+			) );
+		}
+	}
+
+	private function validate_packages( $packages ) {
+		$packages = explode( ')(', trim( $packages, ')(' ) );
+		foreach ( $packages as $package ) {
+			$attrs = shortcode_parse_atts( $package );
+			$this->validate_package_required_attributes( $attrs );
+		}
+	}
+
+	private function validate_package_required_attributes( array $attrs ) {
+		$attrs          = array_merge( array_fill_keys( $this->get_mandatory_package_attributes(), null ), $attrs );
+		$required_attrs = array_diff( $attrs, array_filter( $attrs ) );
+		if ( count( $required_attrs ) ) {
+			throw new LogicException( sprintf(
+				"Package attributes '%s' are mandatory",
+				implode( ', ', array_keys( $required_attrs ) )
+			) );
 		}
 	}
 }

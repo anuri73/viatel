@@ -30,62 +30,97 @@ wp_enqueue_script(
 				<?php endforeach; ?>
 			<?php endif ?>
 
-            <div class="form-group">
-                <label for="viatel-email"
-                       class="col-form-label vt_text_label">
-					<?= _( 'E-mail Address (optional, can be used by customer service)' ) ?>
-                </label>
-                <input type="email"
-                       class="form-control vt_text_input"
-                       id="viatel-email"
-                       placeholder="roberth.nilsson@viatel.se"
-                       name="viatel[email]"
-                />
-            </div>
-            <div class="form-group">
-                <label for="viatel-account_number"
-                       class="col-form-label vt_text_label">
-					<?= _( 'Enter your account number or leave blank' ) ?>
-                </label>
-                <input type="number"
-                       class="form-control vt_text_input"
-                       id="viatel-account_number"
-                       placeholder="9 8 7 6 5 4 3 2 1"
-                       name="viatel[account_number]"
-                />
-            </div>
-            <div class="form-group form-check">
-                <input class="form-check-input" type="checkbox" id="viatel-approve_top_up"
-                       name="viatel[approve_top_up]">
-                <label class="form-check-label" for="viatel-approve_top_up">
-					<?= _( 'I approve top-up from the phone' ) ?>
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <input class="form-check-input" type="checkbox" id="viatel-approve_automatic_top_up"
-                       name="viatel[approve_automatic_top_up]">
-                <label class="form-check-label" for="viatel-approve_automatic_top_up">
-					<?= _( 'I approve automatic top-up when using the phone service' ) ?>
-                </label>
-            </div>
+			<?php if ( ! empty( $widget->name_label ) ) : ?>
+                <div class="form-group">
+                    <label for="viatel-customer_name"
+                           class="col-form-label vt_text_label">
+						<?= $widget->name_label ?>
+                    </label>
+                    <input type="text"
+                           class="form-control vt_text_input"
+                           id="viatel-customer_name"
+                           name="viatel[customer_name]"
+                    />
+                </div>
+			<?php endif; ?>
+
+			<?php if ( ! empty( $widget->email_label ) ) : ?>
+                <div class="form-group">
+                    <label for="viatel-email"
+                           class="col-form-label vt_text_label">
+						<?= $widget->email_label ?>
+                    </label>
+                    <input type="text"
+                           class="form-control vt_text_input"
+                           id="viatel-email"
+                           name="viatel[email]"
+                    />
+                </div>
+			<?php endif; ?>
+
+			<?php if ( ! empty( $widget->phone_label ) ) : ?>
+                <div class="form-group">
+                    <label for="viatel-phone"
+                           class="col-form-label vt_text_label">
+						<?= $widget->phone_label ?>
+                    </label>
+                    <input type="text"
+                           class="form-control vt_text_input"
+                           id="viatel-phone"
+                           name="viatel[phone]"
+                    />
+                </div>
+			<?php endif; ?>
+
+			<?php if ( ! empty( $widget->account_number_label ) ) : ?>
+                <div class="form-group">
+                    <label for="viatel-account_number"
+                           class="col-form-label vt_text_label">
+						<?= $widget->account_number_label ?>
+                    </label>
+                    <input type="text"
+                           class="form-control vt_text_input"
+                           id="viatel-account_number"
+                           name="viatel[account_number]"
+                    />
+                </div>
+			<?php endif; ?>
+
+			<?php if ( ! empty( $widget->approve_top_up_label ) ) : ?>
+                <div class="form-group form-check">
+                    <input class="form-check-input" type="checkbox" id="viatel-approve_top_up"
+                           name="viatel[approve_top_up]">
+                    <label class="form-check-label" for="viatel-approve_top_up">
+						<?= $widget->approve_top_up_label ?>
+                    </label>
+                </div>
+			<?php endif; ?>
+
+			<?php if ( ! empty( $widget->approve_automatic_top_up_label ) ) : ?>
+                <div class="form-group form-check">
+                    <input class="form-check-input" type="checkbox" id="viatel-approve_automatic_top_up"
+                           name="viatel[approve_automatic_top_up]">
+                    <label class="form-check-label" for="viatel-approve_automatic_top_up">
+						<?= $widget->approve_automatic_top_up_label ?>
+                    </label>
+                </div>
+			<?php endif; ?>
             <label class="col-form-label vt_text">
-				<?= _( 'Click your preferred package to purchase:' ) ?>
+				<?= $widget->packages_label ?>
             </label>
-            <input type="hidden" name="viatel[_wpnonce]" value="<?= wp_create_nonce( 'viatel_create_order' ) ?>">
             <div class="btn-toolbar d-flex">
-                <button type="submit" class="btn btn-rhino w-100 mr-2 p-5 vt-button" name="viatel[amount]" value="40">
-                    <span class="vt_button_title row justify-content-md-center">40 minutes</span>
-                    <span class="vt_button_text row justify-content-md-center">99 kr (2,48 kr/min)</span>
-                </button>
-                <button type="submit" class="btn btn-rhino w-100 p-5 vt-button" name="viatel[amount]" value="100">
-                    <span class="vt_button_title row justify-content-md-center">100 minutes</span>
-                    <span class="vt_button_text row justify-content-md-center">199 kr (1,99 kr/min)</span>
-                </button>
-                <button type="submit" class="btn btn-rhino w-100 ml-2 p-5 vt-button" name="viatel[amount]" value="250">
-                    <span class="vt_button_title row justify-content-md-center">250 minutes</span>
-                    <span class="vt_button_text row justify-content-md-center">449 kr (1,79 kr/min)</span>
-                </button>
+				<?php foreach ( $widget->packages as $package ) : ?>
+                    <button type="submit"
+                            class="btn btn-rhino w-100 mr-2 p-5 vt-button"
+                            name="viatel[amount]"
+                            value="<?= $package->amount ?>"
+                    >
+                        <span class="vt_button_title row justify-content-md-center"><?= $package->main_text ?></span>
+                        <span class="vt_button_text row justify-content-md-center"><?= $package->sub_text ?></span>
+                    </button>
+				<?php endforeach; ?>
             </div>
+            <input type="hidden" name="viatel[_wpnonce]" value="<?= wp_create_nonce( 'viatel_create_order' ) ?>">
         </form>
     </div>
 </div>

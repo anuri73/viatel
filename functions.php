@@ -46,3 +46,9 @@ function viatel_notice() {
 		update_option( 'viatel_notifications', false );
 	}
 }
+
+function trim_once( $text, $char_list ) {
+	$char_list = preg_quote( $char_list, null );
+
+	return preg_replace( "#^([$char_list])?(.*?)([$char_list])?$#", '$2', $text );
+}
