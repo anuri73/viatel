@@ -92,7 +92,7 @@
     <input type="hidden" name="profile[environment]"
            value="<?= $viatel_profile->get_environment() ?>">
 
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" class="btn btn-primary mt-3">
 		<?= _( 'Save' ) ?>
     </button>
 </form>
