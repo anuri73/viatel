@@ -29,14 +29,14 @@ wp_localize_script(
     <div class="row">
         <div class="col-12 col-md-8">
             <div class="row">
-                <div class="col-12 col-md-8 d-flex justify-content-left align-items-center flex-wrap">
+                <div class="col-12 col-md-9 d-flex justify-content-left align-items-center flex-wrap">
                     <h3>
 						<?= esc_html( $this->viatel->config->get_plugin_title() ); ?>
                     </h3>
                 </div>
-                <div class="col-12 col-md-4 d-flex justify-content-center align-items-center flex-wrap">
+                <div class="col-12 col-md-3 d-flex justify-content-center align-items-center flex-wrap">
                     <img src="<?= $this->viatel->asset->get_asset_path( 'img/viatel-logga.png' ) ?>" alt="logo"
-                         class="img-fluid"/>
+                         class="img-fluid" style="width:10rem;"/>
                 </div>
             </div>
         </div>
