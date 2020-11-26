@@ -18,6 +18,7 @@ include 'Profile.php';
 include 'ShortCode.php';
 include 'Viatel_Widget.php';
 include 'Package.php';
+include 'Log.php';
 
 $viatel = new Viatel();
 

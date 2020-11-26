@@ -6,6 +6,7 @@ class Viatel {
 	public $view;
 	public $asset;
 	public $short_code;
+	private $log;
 
 	public function __construct() {
 		$this->config     = new Config( $this );
@@ -13,6 +14,7 @@ class Viatel {
 		$this->view       = new View( $this );
 		$this->asset      = new Asset( $this );
 		$this->short_code = new ShortCode( $this );
+		$this->log        = new Log( $this );
 	}
 
 	public function init() {
