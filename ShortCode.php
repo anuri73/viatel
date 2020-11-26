@@ -117,7 +117,7 @@ class ShortCode {
 			"ApproveAutomaticTopUp" => $viatel_widget->approve_automatic_top_up,
 			"Extra"                 => ! empty( $package->extra ) ? (string) $package->extra : null,
 			"VATAmountIncluded"     => $viatel_widget->vat_amount_included,
-			"ConfirmationPage"      => $viatel_widget->show_confirmation_page === '1' ? "true" : "false",
+			"ConfirmationPage"      => $viatel_widget->show_confirmation_page === '1',
 		] );
 
 		return wp_remote_post( $this->viatel->config->get_create_order_url( $viatel_widget->env ),
