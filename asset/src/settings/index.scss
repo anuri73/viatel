@@ -11,6 +11,7 @@ $font-size-base: 1.2rem;
 @import "~bootstrap/scss/bootstrap-grid";
 @import "~bootstrap/scss/custom-forms";
 @import "~bootstrap/scss/alert";
+@import "~bootstrap/scss/tables";
 
 .viatel {
 
@@ -47,5 +48,9 @@ $font-size-base: 1.2rem;
     &::after {
       top: 0.23rem;
     }
+  }
+
+  .card {
+    max-width: inherit;
   }
 }

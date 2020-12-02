@@ -119,8 +119,8 @@ class ShortCode {
 			"VATAmountIncluded"     => $viatel_widget->vat_amount_included,
 			"ConfirmationPage"      => $viatel_widget->show_confirmation_page === '1',
 		] );
-
-		return wp_remote_post( $this->viatel->config->get_create_order_url( $viatel_widget->env ),
+		$start                = microtime( true );
+		$response             = wp_remote_post( $this->viatel->config->get_create_order_url( $viatel_widget->env ),
 			[
 				'method'  => 'POST',
 				'headers' => [
@@ -129,6 +129,20 @@ class ShortCode {
 				'body'    => $request,
 			]
 		);
+
+		$log_data = [
+			'time'           => gmdate( DATE_ATOM ),
+			'request'        => $request,
+			'response'       => $response,
+			'execution_time' => microtime( true ) - $start,
+			'env'            => $viatel_widget->env,
+		];
+
+		$log_data['response']['body'] = htmlspecialchars( $response['body'], ENT_QUOTES, 'UTF-8' );
+
+		$this->viatel->log->log( $log_data, $viatel_widget->env );
+
+		return $response;
 	}
 
 	public function get_mandatory_attributes() {

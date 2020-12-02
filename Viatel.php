@@ -6,7 +6,7 @@ class Viatel {
 	public $view;
 	public $asset;
 	public $short_code;
-	private $log;
+	public $log;
 
 	public function __construct() {
 		$this->config     = new Config( $this );
@@ -20,6 +20,7 @@ class Viatel {
 	public function init() {
 		$this->action->init_actions();
 		$this->short_code->init();
+		$this->log->init();
 	}
 
 	public function get_profiles() {

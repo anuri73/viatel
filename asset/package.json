@@ -6,7 +6,7 @@
   "license": "ISC",
   "scripts": {
     "build": "webpack --mode=development --progress --hide-modules",
-    "production": "webpack --mode=production --progress --hide-modules --devtool=source-maps",
+    "production": "webpack --mode=production --progress --hide-modules",
     "watch": "webpack --mode=development --watch",
     "start": "webpack-dev-server --open --mode=development",
     "clear": "del-cli dist"

@@ -114,7 +114,7 @@ module.exports = (env, argv) => {
                         {
                             loader: 'image-webpack-loader',
                             options: {
-                                disable: !isProduction,
+                                disable: true,
                                 mozjpeg: {
                                     progressive: true,
                                     quality: 65
