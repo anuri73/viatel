@@ -1,6 +1,7 @@
 import './index.scss';
 import 'bootstrap';
 import 'jquery-form';
+import 'bootstrap-datepicker';
 
 $(function () {
 
@@ -75,4 +76,9 @@ $(function () {
         }, false);
     }
     $('#profiles-tabs a:first').tab('show');
+
+    $('#log-datepicker').datepicker({
+        format: "yyyy-mm-dd",
+        weekStart: 1
+    });
 });

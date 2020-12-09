@@ -8,6 +8,11 @@ class View {
 	}
 
 	public function render_settings() {
+		if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+			if ( isset( $_POST['send-log'] ) ) {
+				$this->send_logs();
+			}
+		}
 		$this->render( 'settings' );
 	}
 
@@ -23,5 +28,28 @@ class View {
 			untrailingslashit( $dir ),
 			untrailingslashit( $template . '.php' ),
 		] );
+	}
+
+	private function send_logs() {
+		$env            = $_POST['send-log']['env'];
+		$transactions   = get_posts( [
+			'numberposts' => 250,
+			'post_type'   => 'viatel_log_' . strtolower( $env ),
+			'post_status' => 'closed',
+		] );
+		$temp_file_name = tempnam( "/tmp", "viatel_log" );
+
+		$handle = fopen( $temp_file_name, "a" );
+		foreach ( $transactions as $transaction ) {
+			fwrite( $handle, implode( '|', [
+				$transaction
+			] ) );
+		}
+		fclose( $handle );
+		wp_mail(
+			'api-support@viatel.se',
+			'Logs',
+			'asdasd'
+		);
 	}
 }
